@@ -1,1 +1,220 @@
-Hello World!
+<!DOCTYPE HTML>
+<!--
+	Website Template Credit:
+	Prologue by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Tutorial - Create an Azure IoT Service using the Derecho library</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="shortcut icon" type="image/png" href="images/cornell_logo.png"/>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<div id="header">
+
+				<div class="top">
+
+					<!-- Logo -->
+						<div id="logo">
+							<span class="image avatar48"><img src="images/cornell_logo.png" alt="" /></span>
+							<h1 id="title">CS5412: Topics in <br /> Cloud Computing</h1>
+
+							<p>"The class that everyone should definitely take in Cornell"</p>
+						</div>
+
+					<!-- Nav -->
+						<nav id="nav" class="text-align-left">
+							<ul>
+								<li><a href="#overview"><span class="">Overview</span></a></li>
+								<li><a href="#section_1"><span class="">Section 1 - IoT Device</span></a></li>
+								<li><a href="#section_2"><span class="">Section 2 - IoTHub Function</span></a></li>
+								<li><a href="#section_3"><span class="">Section 3 - Virtual Machines</span></a></li>
+							</ul>
+						</nav>
+
+				</div>
+
+			</div>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Intro -->
+					<section id="top" class="one dark cover">
+						<div class="container">
+
+							<header>
+								<h2 class="alt">Tutorial - Create an Azure IoT Service <br /> using the Derecho library</h2>
+								<p>2019-06-02 · 45 minutes to read · Xitang Zhao</p>
+							</header>
+
+						</div>
+					</section>
+
+				<!-- overview -->
+					<section id="overview" class="two section-padding-fix">
+						<div class="container text-align-left">
+
+							<header class="text-align-center">
+								<h2>Overview</h2>
+							</header>
+
+							<p> <a href="https://github.com/Derecho-Project/derecho">Derecho</a>
+								is a library that helps you build replicated, fault-tolerant services in a datacenter with RDMA networking. This tutorial shows a step by step walkthrough of setting up a simple Azure IoT Service that uses Derecho library. This tutorial contains 3 main sections:</p>
+							<li><a href="#section_1">Section 1 - Set up an IoT device that sends data to an IoT hub (D2C)</a></li>
+							<li><a href="#section_2">Section 2 - Set up an IoTHubTrigger Azure function</a></li>
+							<li><a href="#section_3">Section 3 - Set up a Virtual Machines Scale Set to host Derecho application</a></li>
+							<br/>
+							<a class="image featured"><img src="images/design_architecture.png" alt="" /></a>
+							<p>At the completion of this tutorial, you will set up your local computer as an IoT device. Whenever you execute the
+								“device_to_cloud.cs” source code. Your local computer (the IoT device) would timestamp its start time T0 and send T0
+								to the Azure IoT Hub. Whenever it receives any data from the IoT device, the IoT hub auto-triggers and runs an
+								Azure Function. The function first timestamps its start time T1 and send a “HelloWorld” message to an
+								Azure Load Balancer via TCP. The load balancer simply redirects traffic to a VM inside the Azure Virtual Machine
+								Scale Set. One of the process of the 3-process Derecho group running inside the scale set would timestamps T2
+								when it receives the request and sends back T2 to the Azure Function. The Azure Function timestamps T3 when
+								it hears back, and sends T1, T2, T3 back to the IoT device.</p>
+
+						</div>
+					</section>
+
+				<!-- section_1 Me -->
+					<section id="section_1" class="three">
+						<div class="container text-align-left">
+
+							<header class="text-align-center">
+								<h2>Section 1 - Set up an IoT device that <br />sends data to an IoT hub (D2C)</h2>
+							</header>
+							<h3>Part A - Create an IoT hub</h3>
+							<p>Before you can send any data to the IoT hub, you need to first create your IoT hub. Below is a list of steps to create an IoT hub on the Azure portal.</p>
+							<ol>
+							  <li>Log in to the Azure portal: <a href="https://portal.azure.com/">https://portal.azure.com/</a></li>
+							  <li>Click the green + icon on the left to “Create a resource”, then Search the Marketplace by typing “IoT Hub”</li>
+							  <li>Select “IoT Hub” and click the “Create” button. Fill in the fields<a class="image featured"><img src="images/Image1_1.jpg" alt="" /></a></li>
+								<li>Click “Next: Size and scale”</li>
+								<li>Choose “F1:Free tier” in Pricing and scale tier to avoid paying for testing purpose (Free tier allows 500 devices to be connected to the IoT hub and up to 8,000 messages per day) </li>
+								<li>Click “Review + create”. Then click “Create”. Creating an IoT hub takes a few minutes</li>
+							</ol>
+
+							<br/>
+							<h3>Part B - Register an IoT device</h3>
+							<p>An IoT device must be registered with your IoT hub before it can connect. Below is a list of steps to register an IoT device on the Azure portal.</p>
+							<ol>
+								<li>Log in to the Azure portal: <a href="https://portal.azure.com/">https://portal.azure.com/</a></li>
+								<li>Type “IoT Hub” on the “Search resources, services, and docs” search bar on top and select “IoT Hub”</li>
+								<li>Select the IoT Hub you just created</li>
+								<li>Click “IoT devices”</li>
+								<li>Click “+ Add“ to create a device</li>
+								<li>Enter the Device ID, for example, “my-device”.</li>
+								<li>Click “Save”</li>
+								<li>Choose “my-device” or the device you just created</li>
+								<li>Click the “Copy to clipboard” icon for the Connection string (primary key) and save it somewhere locally to be used next. The format of the IoT device connection string looks like this: HostName={Your_IoT_Hub_Name}.azure-devices.net;DeviceId=MyNodeDevice;SharedAccessKey={Your_Device_Shared_Access_Key}</li>
+							</ol>
+
+							<br/>
+							<h3>Part C - Register an IoT device</h3>
+							<p>Once the IoT hub is created and the IoT device is registered, you can use your local computer to act as an IoT device and send data to the IoT hub. Below is a list of steps to send data from IoT device to IoT hub (D2C - Device to Cloud) using your local machine.</p>
+							<ol>
+								<li>Install Git on your local machine if you haven’t: <a href="https://www.atlassian.com/git/tutorials/install-git#windows">https://www.atlassian.com/git/tutorials/install-git#windows</a>. Git will be used to download the source code that send datas from IoT device to IoT hub</li>
+								<li>In the local terminal window (or Windows Powershell), run <code>dotnet --version</code> to check the version of your .NET Core SDK. Since the source code is written in C#. You need the .NET Core SDK 2.1.0 or greater on your development machine. You can download the .NET Core SDK for multiple platforms from .NET: <a href="https://dotnet.microsoft.com/download/archives">https://dotnet.microsoft.com/download/archives</a></li>
+								<li>In the local terminal window, run “git clone https://github.com/xitanggg/Azure-IoT-Service-using-Derecho.git” to download the source code</li>
+								<li>In the local terminal window, run <code>cd Azure-IoT-Service-using-Derecho/device_to_cloud</code> to change your directory to the “device_to_cloud” directory</li>
+								<li>Open the “device_to_cloud.cs” file and paste the IoT device connection string you saved earlier on line xxx. Save the file</li>
+								<li>In the local terminal window, run <code>dotnet restore</code> to install the required packages for device_to_cloud</li>
+								<li>In the local terminal window, run <code>dotnet run</code> to build and run device_to_cloud</li>
+							</ol>
+
+							<div class="row">
+								<div class="col-4 col-12-mobile">
+									<article class="item">
+										<a href="#" class="image fit"><img src="images/pic02.jpg" alt="" /></a>
+										<header>
+											<h3>Ipsum Feugiat</h3>
+										</header>
+									</article>
+								</div>
+								<div class="col-4 col-12-mobile">
+									<article class="item">
+										<a href="#" class="image fit"><img src="images/pic05.jpg" alt="" /></a>
+										<header>
+											<h3>Natoque Vitae</h3>
+										</header>
+									</article>
+								</div>
+								<div class="col-4 col-12-mobile">
+									<article class="item">
+										<a href="#" class="image fit"><img src="images/pic06.jpg" alt="" /></a>
+										<header>
+											<h3>Dolor Penatibus</h3>
+										</header>
+									</article>
+								</div>
+							</div>
+
+						</div>
+					</section>
+
+				<!-- section_2 -->
+					<section id="section_2" class="four">
+						<div class="container text-align-left">
+
+							<header class="text-align-center">
+								<h2>Section 2: Set up an IoTHubTrigger Azure function</h2>
+							</header>
+							<h3>Part A - Create an IoT Hub Trigger Azure function that prints data received</h3>
+							<p>You have set up your local computer as an IoT device to send data to the IoT hub. Now you will create an Azure function that will run and print out the received data whenever the IoT Hub receives data from the IoT device. Below is a list of steps to create IoT Hub Trigger function on the Azure portal.</p>
+							<ol>
+								<li>Log in to the Azure portal: <a href="https://portal.azure.com/">https://portal.azure.com/</a></li>
+								<li>Type “Function App” on the “Search resources, services, and docs” search bar on top and select “Function App”</li>
+								<li>Select Function app settings</li>
+								<li>Runtime version choose ~1</li>
+								<li>Click the blue + icon next to Functions to create a new function for the Function App</li>
+								<li>Scroll down and click IoT Hub</li>
+							</ol>
+
+							<p>a</p>
+
+						</div>
+					</section>
+
+				<!-- section_3 -->
+					<section id="section_3" class="two">
+						<div class="container text-align-left">
+
+							<header class="text-align-center">
+								<h2>Section 3: Set up a Virtual Machines Scale Set to host Derecho application</h2>
+							</header>
+
+							<p>a</p>
+
+						</div>
+					</section>
+			</div>
+
+		<!-- Footer -->
+			<div id="footer">
+
+				<!-- Copyright -->
+					<ul class="copyright">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
