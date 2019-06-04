@@ -28,10 +28,10 @@ public static void Run(string myIoTHubMessage, TraceWriter log)
     string T1 = DateTime.Now.ToString("T1:yyyy-MM-dd_HH:mm:ss.ffffff_UTCK");
 
     // Enter your Azure Load Balancer IP here
-    const string LOAD_BALANCER_IP = "52.224.185.251";
+    const string LOAD_BALANCER_IP = "";
     const int PORT_NUM = 80;
     // Enter your IoTHub connection string here to connect with IoT hub
-    const string iot_hub_connection_string = "HostName=derecho.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=GoMHRJEs0+prNlpg1DYrDsuAtuyBotEFoas7VlK3oB0=";
+    const string iot_hub_connection_string = "";
 
     // Create a TCPClient object at the IP and port
     TcpClient function_TCP_client = new TcpClient(LOAD_BALANCER_IP, PORT_NUM);

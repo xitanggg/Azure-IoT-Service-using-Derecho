@@ -3,7 +3,7 @@
  * (T0 = Time laptop about to send message) to IoT Hub every 3s. Then
  * it prints T0, T1, T2, T3, T4 when it hears back.
  *
- * To begin, enter your device connection string at line 33.
+ * To begin, enter your device connection string at line 34.
  * Run "dotnet restore" followed by "dotnet run" on your terminal.
  *
  * My finding: The first IoT Hub connection takes ~1-2s but the rest is super fast
@@ -31,7 +31,7 @@ namespace device_to_cloud_namespace
     class device_to_cloud
     {
         // Enter your device connection string here to connect with IoT hub.
-        private readonly static string device_connection_string = "HostName=derecho.azure-devices.net;DeviceId=sensor-to-hub;SharedAccessKey=DLhFyBBixV6TRx3J1uKGYSGsqOhFbQl7RJ9eeamxs0Y=";
+        private readonly static string device_connection_string = "";
 
         private static DeviceClient device_client;
 
