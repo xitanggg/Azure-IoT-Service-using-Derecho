@@ -2657,3 +2657,7 @@ code {
 	width: 60%;
 	margin: 0 0 0 0;
 }
+
+.a_no_dot{
+	border-bottom: dotted 0px rgba(128, 128, 128, 0.5);
+}

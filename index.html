@@ -1,5 +1,8 @@
 <!DOCTYPE HTML>
 <!--
+	Tutorial - Create an Azure IoT Service using the Derecho library
+	2019-06-02 · 45 minutes to read · Xitang Zhao
+
 	Website Template Credit:
 	Prologue by HTML5 UP
 	html5up.net | @ajlkn
@@ -23,9 +26,8 @@
 					<!-- Logo -->
 						<div id="logo">
 							<span class="image avatar48"><img src="images/cornell_logo.png" alt="" /></span>
-							<h1 id="title">CS5412: Topics in <br /> Cloud Computing</h1>
-
-							<p>"The class that everyone should definitely take in Cornell"</p>
+							<h1 id="title"><a href="http://www.cs.cornell.edu/courses/cs5412/" class="a_no_dot">CS5412: Topics in <br /> Cloud Computing</a></h1>
+							<p><a href="http://www.cs.cornell.edu/courses/cs5412/" class="a_no_dot">"The class that everyone should definitely take in Cornell"</a></p>
 						</div>
 
 					<!-- Nav -->
@@ -38,6 +40,12 @@
 								<li><a href="#final_wrap_up"><span class="">Final Wrap Up</span></a></li>
 							</ul>
 						</nav>
+
+						<div id="logo">
+							<br/>
+							<p>Spring 2019</p>
+							<p><a href="https://www.linkedin.com/in/xitang">Xitang Zhao</a></p>
+						</div>
 
 				</div>
 
@@ -175,7 +183,8 @@
 								<li>Choose "Configuration" under "Configured features"</li>
 								<li>Click "+ New application setting"</li>
 								<li>Enter "WEBSITE_TIME_ZONE" for Name and "Eastern Standard Time" for Value<a class="image featured_90"><img src="images/Image2_7.png" alt="" /></a></li>
-								<li>Click "Update" (This changes the Function App Time Zone to be Eastern Standard Time for time/latency measurement purpose)</li>
+								<li>Click "Update" (This changes the Function App Time Zone to be Eastern Standard Time for time/latency
+									measurement purpose of this project)</li>
 							</ol>
 
 							<br/>
@@ -195,6 +204,30 @@
 								<li>Click "Run" (The default code simply prints out any message the IoT Hub receives from the
 									IoT device. And you should see it printing out the T0 timestamp if you still keep your "device_to_cloud.cs" running.)
 									<a class="image featured_90"><img src="images/Image2_6.png" alt="" /></a></li>
+							</ol>
+
+							<br/>
+							<h3>Part C - Update the IoT Hub Trigger Azure function</h3>
+							<p>You have the IoT Hub Trigger Azure function up and running. Below is a list of steps to update the IoT Hub Trigger function
+								to send "HelloWorld" via TCP to Azure Load Balancer and sends T1, T2, T3 back to the IoT device.</p>
+							<ol>
+								<li>Select "IoTHubCSharp_EventHub1" or the function you just created (Refer to Part B Step 9 if you forget how)</li>
+								<li>Click "View files" on the right hand side</li>
+								<li>Click "Upload" and upload "project.json", which is a file you clone and can be found under
+									the folder "Azure-IoT-Service-using-Derecho\IoT_Hub_trigger_function" (you might need to reselect the function
+									to see the file being uploaded successfully)</li>
+								<li>Click "Logs" to see the logs and you should see the function is installing dependencies libraries for "Microsoft.Azure.Devices",
+								which will be used to send data from IoT Hub to IoT device, also known as Cloud to Device (C2D)
+								<a class="image featured_90"><img src="images/Image2_8.png" alt="" /></a></li>
+								<li>Use your favorite text editor to open "run.csx" under the folder "Azure-IoT-Service-using-Derecho\IoT_Hub_trigger_function"
+								(to make this code work, you need to enter your IoTHub connection string at line 34 and Azure Load Balancer IP at line 31)</li>
+								<li>IoTHub connection string can be found at your IoTHub, choose "Shared access policies", choose "iothubowner", and Click the "Copy to
+									clipboard" icon for the Connection string (primary key) and paste it at line 34. The format of the IoT device connection string looks like this:
+									HostName=derecho-iot-hub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=xxxxxxxxxxx
+									<a class="image featured_90"><img src="images/Image2_9.png" alt="" /></a></li>
+								<li>You will get an Azure Load Balancer IP at the next section</li>
+								<li>For now, copy all the source code for "run.csx" and replace the one on the portal. Click "Save". Come back and fill in Load Balancer IP later
+								<a class="image featured_90"><img src="images/Image2_10.png" alt="" /></a></li>
 							</ol>
 						</div>
 					</section>
