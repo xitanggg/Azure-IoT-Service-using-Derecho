@@ -2636,3 +2636,24 @@ code {
 				color: #555555;
 				padding: 0.2em 0.2em;
     }
+
+.image.featured_90 {
+	display: block;
+	width: 90%;
+}
+
+.image.featured_80 {
+	display: block;
+	width: 80%;
+}
+
+.image.featured_70 {
+	display: block;
+	width: 70%;
+}
+
+.image.featured_60 {
+	display: block;
+	width: 60%;
+	margin: 0 0 0 0;
+}

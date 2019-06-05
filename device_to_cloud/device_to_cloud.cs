@@ -31,7 +31,7 @@ namespace device_to_cloud_namespace
     class device_to_cloud
     {
         // Enter your device connection string here to connect with IoT hub.
-        private readonly static string device_connection_string = "";
+        private readonly static string device_connection_string = "HostName=derecho-iot-hub.azure-devices.net;DeviceId=my-device-1;SharedAccessKey=xxxxxxxxxxxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxx";
 
         private static DeviceClient device_client;
 

@@ -35,6 +35,7 @@
 								<li><a href="#section_1"><span class="">Section 1 - IoT Device</span></a></li>
 								<li><a href="#section_2"><span class="">Section 2 - IoTHub Function</span></a></li>
 								<li><a href="#section_3"><span class="">Section 3 - Virtual Machines</span></a></li>
+								<li><a href="#final_wrap_up"><span class="">Final Wrap Up</span></a></li>
 							</ul>
 						</nav>
 
@@ -66,20 +67,23 @@
 							</header>
 
 							<p> <a href="https://github.com/Derecho-Project/derecho">Derecho</a>
-								is a library that helps you build replicated, fault-tolerant services in a datacenter with RDMA networking. This tutorial shows a step by step walkthrough of setting up a simple Azure IoT Service that uses Derecho library. This tutorial contains 3 main sections:</p>
+								is a library that helps you build replicated, fault-tolerant services in a datacenter with RDMA networking.
+								This tutorial shows a step by step walkthrough of setting up a simple Azure IoT Service that uses Derecho library.
+								This tutorial contains 3 main sections:</p>
 							<li><a href="#section_1">Section 1 - Set up an IoT device that sends data to an IoT hub (D2C)</a></li>
 							<li><a href="#section_2">Section 2 - Set up an IoTHubTrigger Azure function</a></li>
 							<li><a href="#section_3">Section 3 - Set up a Virtual Machines Scale Set to host Derecho application</a></li>
 							<br/>
 							<a class="image featured"><img src="images/design_architecture.png" alt="" /></a>
 							<p>At the completion of this tutorial, you will set up your local computer as an IoT device. Whenever you execute the
-								“device_to_cloud.cs” source code. Your local computer (the IoT device) would timestamp its start time T0 and send T0
+								"device_to_cloud.cs" source code. Your local computer (the IoT device) would timestamp its start time T0 and send T0
 								to the Azure IoT Hub. Whenever it receives any data from the IoT device, the IoT hub auto-triggers and runs an
-								Azure Function. The function first timestamps its start time T1 and send a “HelloWorld” message to an
+								Azure Function. The function first timestamps its start time T1 and send a "HelloWorld" message to an
 								Azure Load Balancer via TCP. The load balancer simply redirects traffic to a VM inside the Azure Virtual Machine
-								Scale Set. One of the process of the 3-process Derecho group running inside the scale set would timestamps T2
+								Scale Set. One of the process of the 2-process (or 3-process) Derecho group running inside the scale set would timestamps T2
 								when it receives the request and sends back T2 to the Azure Function. The Azure Function timestamps T3 when
-								it hears back, and sends T1, T2, T3 back to the IoT device.</p>
+								it hears back, and sends T1, T2, T3 back to the IoT device. (See the image above for the Design Architecture and the image below
+								for the resulting output when you run "device_to_cloud.cs")</p>
 							<br/>
 							<a class="image featured"><img src="images/result.png" alt="" /></a>
 
@@ -94,29 +98,35 @@
 								<h2>Section 1 - Set up an IoT device that <br />sends data to an IoT hub (D2C)</h2>
 							</header>
 							<h3>Part A - Create an IoT hub</h3>
-							<p>Before you can send any data to the IoT hub, you need to first create your IoT hub. Below is a list of steps to create an IoT hub on the Azure portal.</p>
+							<p>Before you can send any data to the IoT hub, you need to first create your IoT hub.
+								Below is a list of steps to create an IoT hub on the Azure portal.</p>
 							<ol>
 							  <li>Log in to the Azure portal: <a href="https://portal.azure.com/">https://portal.azure.com/</a></li>
-							  <li>Click the green + icon on the left to “Create a resource”, then Search the Marketplace by typing “IoT Hub”</li>
-							  <li>Select “IoT Hub” and click the “Create” button. Fill in the fields<a class="image featured"><img src="images/Image1_1.jpg" alt="" /></a></li>
-								<li>Click “Next: Size and scale”</li>
-								<li>Choose “F1:Free tier” in Pricing and scale tier to avoid paying for testing purpose (Free tier allows 500 devices to be connected to the IoT hub and up to 8,000 messages per day) </li>
-								<li>Click “Review + create”. Then click “Create”. Creating an IoT hub takes a few minutes</li>
+							  <li>Click the green + icon on the left to "Create a resource", then Search the Marketplace by typing "IoT Hub"</li>
+							  <li>Select "IoT Hub" and click the "Create" button. Fill in the fields<a class="image featured_80"><img src="images/Image1_1.png" alt="" /></a></li>
+								<li>Click "Next: Size and scale"</li>
+								<li>Choose "F1:Free tier" in Pricing and scale tier to avoid paying for testing purpose (Free tier allows 500 devices to be connected to the IoT hub and up to 8,000 messages per day) </li>
+								<li>Click "Review + create"</li>
+								<li>Finally, click "Create" (creating an IoT hub takes ~3 minutes)</li>
 							</ol>
 
 							<br/>
 							<h3>Part B - Register an IoT device</h3>
-							<p>An IoT device must be registered with your IoT hub before it can connect. Below is a list of steps to register an IoT device on the Azure portal.</p>
+							<p>An IoT device must be registered with your IoT hub before it can connect and send messages to the IoT hub.
+								Below is a list of steps to register an IoT device on the Azure portal.</p>
 							<ol>
 								<li>Log in to the Azure portal: <a href="https://portal.azure.com/">https://portal.azure.com/</a></li>
-								<li>Type “IoT Hub” on the “Search resources, services, and docs” search bar on top and select “IoT Hub”</li>
+								<li>Type "IoT Hub" on the "Search resources, services, and docs" search bar on top and select "IoT Hub"</li>
 								<li>Select the IoT Hub you just created</li>
-								<li>Click “IoT devices”</li>
-								<li>Click “+ Add“ to create a device</li>
-								<li>Enter the Device ID, for example, “my-device”.</li>
-								<li>Click “Save”</li>
-								<li>Choose “my-device” or the device you just created</li>
-								<li>Click the “Copy to clipboard” icon for the Connection string (primary key) and save it somewhere locally to be used next. The format of the IoT device connection string looks like this: HostName={Your_IoT_Hub_Name}.azure-devices.net;DeviceId=MyNodeDevice;SharedAccessKey={Your_Device_Shared_Access_Key}</li>
+								<li>Click "IoT devices"</li>
+								<li>Click "+ Add" to create a device<a class="image featured_80"><img src="images/Image1_2.png" alt="" /></a></li>
+								<li>Enter the Device ID, for example, "my-device-1". Leave the rest of the field as default<a class="image featured_60"><img src="images/Image1_3.png" alt="" /></a></li>
+								<li>Click "Save"</li>
+								<li>Choose "my-device-1" or the device you just created</li>
+								<li>Click the "Copy to clipboard" icon for the Connection string (primary key) and save it somewhere locally to be used next.
+									The format of the IoT device connection string looks like this:
+									HostName={Your_IoT_Hub_Name}.azure-devices.net;DeviceId=MyNodeDevice;SharedAccessKey={Your_Device_Shared_Access_Key}
+								<a class="image featured_90"><img src="images/Image1_4.png" alt="" /></a></li>
 							</ol>
 
 							<br/>
@@ -125,40 +135,16 @@
 							<ol>
 								<li>Install Git on your local machine if you haven’t: <a href="https://www.atlassian.com/git/tutorials/install-git#windows">https://www.atlassian.com/git/tutorials/install-git#windows</a>. Git will be used to download the source code that send datas from IoT device to IoT hub</li>
 								<li>In the local terminal window (or Windows Powershell), run <code>dotnet --version</code> to check the version of your .NET Core SDK. Since the source code is written in C#. You need the .NET Core SDK 2.1.0 or greater on your development machine. You can download the .NET Core SDK for multiple platforms from .NET: <a href="https://dotnet.microsoft.com/download/archives">https://dotnet.microsoft.com/download/archives</a></li>
-								<li>In the local terminal window, run “git clone https://github.com/xitanggg/Azure-IoT-Service-using-Derecho.git” to download the source code</li>
-								<li>In the local terminal window, run <code>cd Azure-IoT-Service-using-Derecho/device_to_cloud</code> to change your directory to the “device_to_cloud” directory</li>
-								<li>Open the “device_to_cloud.cs” file and paste the IoT device connection string you saved earlier on line xxx. Save the file</li>
-								<li>In the local terminal window, run <code>dotnet restore</code> to install the required packages for device_to_cloud</li>
-								<li>In the local terminal window, run <code>dotnet run</code> to build and run device_to_cloud</li>
+								<li>In the local terminal window, run <code>git clone https://github.com/xitanggg/Azure-IoT-Service-using-Derecho.git</code> to download the source code</li>
+								<li>In the local terminal window, run <code>cd Azure-IoT-Service-using-Derecho/device_to_cloud</code> to change your directory to the "device_to_cloud" directory</li>
+								<li>Open the "device_to_cloud.cs" file with your favoriate choice of text editor, paste the IoT device connection string you saved earlier
+									to replace the existing one on line 34, and save the file</li>
+								<li>In the local terminal window, run <code>dotnet restore</code> to install the required packages based on "device_to_cloud.csproj" (the required
+								packages will be saved inside a obj folder created)</li>
+								<li>In the local terminal window, run <code>dotnet run</code> to build and run "device_to_cloud.cs" (the compiled binary will be saved inside a bin folder created)</li>
+								<li>You should observe the following output (the code halts because it is set up to wait to receive a response from the IoT hub)
+									<a class="image featured_90"><img src="images/Image1_5.png" alt="" /></a></li>
 							</ol>
-
-							<div class="row">
-								<div class="col-4 col-12-mobile">
-									<article class="item">
-										<a href="#" class="image fit"><img src="images/pic02.jpg" alt="" /></a>
-										<header>
-											<h3>Ipsum Feugiat</h3>
-										</header>
-									</article>
-								</div>
-								<div class="col-4 col-12-mobile">
-									<article class="item">
-										<a href="#" class="image fit"><img src="images/pic05.jpg" alt="" /></a>
-										<header>
-											<h3>Natoque Vitae</h3>
-										</header>
-									</article>
-								</div>
-								<div class="col-4 col-12-mobile">
-									<article class="item">
-										<a href="#" class="image fit"><img src="images/pic06.jpg" alt="" /></a>
-										<header>
-											<h3>Dolor Penatibus</h3>
-										</header>
-									</article>
-								</div>
-							</div>
-
 						</div>
 					</section>
 
@@ -169,19 +155,47 @@
 							<header class="text-align-center">
 								<h2>Section 2: Set up an IoTHubTrigger Azure function</h2>
 							</header>
-							<h3>Part A - Create an IoT Hub Trigger Azure function that prints data received</h3>
-							<p>You have set up your local computer as an IoT device to send data to the IoT hub. Now you will create an Azure function that will run and print out the received data whenever the IoT Hub receives data from the IoT device. Below is a list of steps to create IoT Hub Trigger function on the Azure portal.</p>
+							<h3>Part A - Create a Function App</h3>
+							<p>You have set up your local computer as an IoT device to send data to the IoT hub. Now you will create an Azure function that
+								will run and print out the received data whenever the IoT Hub receives data from the IoT device. Before creating an Azure function,
+								you need to first create a Function App that hosts it. Below is a list of steps to create a Function App on the Azure portal.</p>
 							<ol>
 								<li>Log in to the Azure portal: <a href="https://portal.azure.com/">https://portal.azure.com/</a></li>
-								<li>Type “Function App” on the “Search resources, services, and docs” search bar on top and select “Function App”</li>
-								<li>Select Function app settings</li>
-								<li>Runtime version choose ~1</li>
-								<li>Click the blue + icon next to Functions to create a new function for the Function App</li>
-								<li>Scroll down and click IoT Hub</li>
+								<li>Type "Function App" on the "Search resources, services, and docs" search bar on top and select "Function App"</li>
+								<li>Click "+ Add" to create a new Function App</li>
+								<li>Fill in the fields <a class="image featured_90"><img src="images/Image2_1.png" alt="" /></a></li>
+								<li>Click "Create" (creating a Function App takes ~2 minutes)</li>
+								<li>Redo Step 2 to go back to the Function App portal</li>
+								<li>Choose "derecho-function-app" or the Function App you just created</li>
+								<li>Choose "Function app settings" under "Configured features"</li>
+								<li>Choose "~1" for Runtime version (~2 is the default Runtime version. I just found ~1 to be easier to work with when configuring
+									function. <strong>Important: Part B will not work if you don't do this step</strong>)
+									<a class="image featured_90"><img src="images/Image2_2.png" alt="" /></a></li>
+								<li>Redo Step 7 to go back to the Function App you created</li>
+								<li>Choose "Configuration" under "Configured features"</li>
+								<li>Click "+ New application setting"</li>
+								<li>Enter "WEBSITE_TIME_ZONE" for Name and "Eastern Standard Time" for Value<a class="image featured_90"><img src="images/Image2_7.png" alt="" /></a></li>
+								<li>Click "Update" (This changes the Function App Time Zone to be Eastern Standard Time for time/latency measurement purpose)</li>
 							</ol>
 
-							<p>a</p>
-
+							<br/>
+							<h3>Part B - Create an IoT Hub Trigger Azure function</h3>
+							<p>Now you are ready to create an IoT Hub Trigger Azure function that prints out the received data whenever
+								IoT device sends data to the IoT Hub. Below is a list of steps to create the IoT Hub Trigger function on the Azure portal.</p>
+							<ol>
+								<li>Log in to the Azure portal: <a href="https://portal.azure.com/">https://portal.azure.com/</a></li>
+								<li>Type "Function App" on the "Search resources, services, and docs" search bar on top and select "Function App"</li>
+								<li>Choose "derecho-function-app" or the Function App you just created</li>
+								<li>Click the blue + icon next to Functions to create a new function for the Function App</li>
+								<li>Choose "create your own custom function"<a class="image featured_90"><img src="images/Image2_3.png" alt="" /></a></li>
+								<li>Scroll down and select "IoT Hub (Event Hub)" template <a class="image featured_70"><img src="images/Image2_4.png" alt="" /></a></li>
+								<li>Fill in the fields <a class="image featured_90"><img src="images/Image2_5.png" alt="" /></a></li>
+								<li>Click "Create"</li>
+								<li>Select "IoTHubCSharp_EventHub1" or the function you just created </li>
+								<li>Click "Run" (The default code simply prints out any message the IoT Hub receives from the
+									IoT device. And you should see it printing out the T0 timestamp if you still keep your "device_to_cloud.cs" running.)
+									<a class="image featured_90"><img src="images/Image2_6.png" alt="" /></a></li>
+							</ol>
 						</div>
 					</section>
 
@@ -191,6 +205,19 @@
 
 							<header class="text-align-center">
 								<h2>Section 3: Set up a Virtual Machines Scale Set to host Derecho application</h2>
+							</header>
+
+							<p>a</p>
+
+						</div>
+					</section>
+
+				<!-- section_3 -->
+					<section id="final_wrap_up" class="three">
+						<div class="container text-align-left">
+
+							<header class="text-align-center">
+								<h2>Final Wrap Up</h2>
 							</header>
 
 							<p>a</p>
